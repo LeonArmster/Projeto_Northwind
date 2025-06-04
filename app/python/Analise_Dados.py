@@ -195,3 +195,15 @@ df_produto_vendido = pd.merge(df_order_details, df_tipo_produto, how='inner')
 df_qtd_produto = df_produto_vendido.groupby('category_name')[['quantity']].sum()
 
 df_qtd_produto.sort_values('quantity', ascending=False)
+
+
+# Vendas por dia e valor por dia
+df_vendas_dia = df_ordens.groupby('order_date')[['order_id']].count()
+
+df_valor_dia = df_valor_ordem.groupby('order_date')[['Total_Value']].sum()
+
+df_vendas_total_dia = pd.merge(df_vendas_dia, df_valor_dia, left_on='order_date', right_on='order_date', how='inner')
+
+df_vendas_total_dia.sort_values('Total_Value', ascending=False)
+
+
