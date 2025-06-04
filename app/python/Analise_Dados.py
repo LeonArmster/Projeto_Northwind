@@ -68,6 +68,7 @@ df_produtos.head()
 df_territorios.head()
 df_regiao.head()
 df_expedidor.head()
+df_customer.head()
 
 
 # Visualizando a quantidade de informações
@@ -160,10 +161,37 @@ df_clientes = df_clientes.groupby('company_name')[['customer_id']].count()
 
 df_clientes.sort_values('customer_id', ascending=False)
 
+df_valor_pedido = df_order_details.groupby('order_id')[['Total_Value']].sum()
 
-# Países mais vendidos
+df_valor_ordem = pd.merge(df_ordens, df_valor_pedido, left_on='order_id', right_on='order_id', suffixes=['_old','_new'], how='inner')
+
+df_valor_ordem = pd.merge(df_valor_ordem, df_funcionarios_new, how='inner')
+
+df_valor_ordem.head()
+
+df_valor_cliente =pd.merge(df_customer, df_valor_ordem, how='inner')
+
+df_valor_cliente = df_valor_cliente.groupby('company_name')[['Total_Value']].sum()
+
+df_valor_cliente.sort_values('Total_Value', ascending=False)
+
+df_analise_cliente = pd.merge(df_valor_cliente, df_clientes, left_on='company_name', right_on='company_name',how='inner')
+
+df_analise_cliente.sort_values('Total_Value', ascending=False)
+
+# Sexta Pergunta: Países mais vendidos
 df_paises = pd.merge(df_customer, df_ordens, how='inner')
 
 df_paises = df_paises.groupby('country')[['customer_id']].count()
 
 df_paises.sort_values('customer_id', ascending=False)
+
+
+# Sétima pergunta: Qual a categoria de produto mais vendida?
+df_tipo_produto = pd.merge(df_produtos, df_categorias, how='inner')
+
+df_produto_vendido = pd.merge(df_order_details, df_tipo_produto, how='inner')
+
+df_qtd_produto = df_produto_vendido.groupby('category_name')[['quantity']].sum()
+
+df_qtd_produto.sort_values('quantity', ascending=False)
